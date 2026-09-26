@@ -6,6 +6,10 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A0F0B5AC3065F92400F6C1F1 /* SiftCore in Frameworks */ = {isa = PBXBuildFile; productRef = A0F0B5AB3065F92400F6C1F1 /* SiftCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A0C3981C3065E8370075A503 /* Sift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -22,6 +26,7 @@
 		A0C398193065E8370075A503 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				A0F0B5AC3065F92400F6C1F1 /* SiftCore in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -53,6 +58,7 @@
 				A0C398183065E8370075A503 /* Sources */,
 				A0C398193065E8370075A503 /* Frameworks */,
 				A0C3981A3065E8370075A503 /* Resources */,
+				A00F156D3067111100D8AF3E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -60,6 +66,9 @@
 				A0C3981E3065E8370075A503 /* Sift */,
 			);
 			name = Sift;
+			packageProductDependencies = (
+				A0F0B5AB3065F92400F6C1F1 /* SiftCore */,
+			);
 			productName = Sift;
 			productReference = A0C3981C3065E8370075A503 /* Sift.app */;
 			productType = "com.apple.product-type.application";
@@ -88,6 +97,9 @@
 			);
 			mainGroup = A0C398133065E8370075A503;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A0F0B5AA3065F92400F6C1F1 /* XCLocalSwiftPackageReference "SiftCore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A0C3981D3065E8370075A503 /* Products */;
 			projectDirPath = "";
@@ -105,6 +117,20 @@
 			);
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A00F156D3067111100D8AF3E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			shellPath = /bin/sh;
+			shellScript = (
+				"if [ \"$CONFIGURATION\" = \"Release\" ]; then",
+				"  rm -rf \"/Applications/${FULL_PRODUCT_NAME}\"",
+				"  cp -R \"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}\" \"/Applications/\"",
+				"fi",
+				"",
+			);
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A0C398183065E8370075A503 /* Sources */ = {
@@ -238,7 +264,7 @@
 		A0C398283065E8390075A503 /* Debug configuration for PBXNativeTarget "Sift" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = icon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -246,16 +272,28 @@
 				DEVELOPMENT_TEAM = 5U787PNUF5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.raghavaboppudi.Sift;
+				PRODUCT_BUNDLE_IDENTIFIER = com.raghavaboppudi.sift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -270,7 +308,7 @@
 		A0C398293065E8390075A503 /* Release configuration for PBXNativeTarget "Sift" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = icon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -278,16 +316,28 @@
 				DEVELOPMENT_TEAM = 5U787PNUF5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.raghavaboppudi.Sift;
+				PRODUCT_BUNDLE_IDENTIFIER = com.raghavaboppudi.sift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -319,6 +369,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A0F0B5AA3065F92400F6C1F1 /* XCLocalSwiftPackageReference "SiftCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = SiftCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A0F0B5AB3065F92400F6C1F1 /* SiftCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SiftCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A0C398143065E8370075A503 /* Project object */;
 	validationLevel = 1;

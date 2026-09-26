@@ -1,0 +1,10 @@
+Title,URL,Username,Password,Notes
+Meta,https://meta.com/login,raghav@gmail.com,password123,
+Meta Accounts,https://accounts.meta.com/login,raghav@gmail.com,differentPass456,
+Meta Business,https://business.meta.com/login,raghav@gmail.com,password123,
+Netflix,https://netflix.com/login,raghav@gmail.com,sharedPass789,
+Hulu,https://hulu.com/login,raghav@work.com,sharedPass789,
+BBC,https://bbc.co.uk/account,raghav@gmail.com,ukPass111,
+Some Bank,https://bank.co.uk/login,raghav@gmail.com,ukPass222,
+"Note-only, comma test",,raghav@gmail.com,,"has a, comma and no password"
+Broken Row,not-a-real-url,raghav@gmail.com,brokenPass,

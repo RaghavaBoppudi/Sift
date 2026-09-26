@@ -1,0 +1,119 @@
+{
+  "features" : [
+    "refractivity",
+    "specular-location"
+  ],
+  "fill" : "system-light",
+  "groups" : [
+    {
+      "blur-material" : 0.09,
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "display-p3:0.32549,0.40784,0.47059,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : "system-light"
+            },
+            {
+              "appearance" : "tinted",
+              "value" : "system-light"
+            }
+          ],
+          "image-name" : "Frame 1.svg",
+          "name" : "Frame 1",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              160.47930137372862,
+              -215.2020672248055
+            ]
+          }
+        }
+      ],
+      "position" : {
+        "scale" : 0.85,
+        "translation-in-points" : [
+          0,
+          0
+        ]
+      },
+      "refractivity" : {
+        "depth" : 0.05,
+        "enabled" : true,
+        "strength" : 0.25
+      },
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 2
+      },
+      "specular" : "inside",
+      "translucency" : {
+        "enabled" : true,
+        "value" : 1
+      }
+    },
+    {
+      "blur-material" : 0.02,
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "display-p3:0.32549,0.40784,0.47059,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : "system-light"
+            },
+            {
+              "appearance" : "tinted",
+              "value" : "system-light"
+            }
+          ],
+          "image-name" : "Frame 2.svg",
+          "name" : "Frame 2",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0.4287819921337359,
+              0.28193277519443427
+            ]
+          }
+        }
+      ],
+      "position" : {
+        "scale" : 0.85,
+        "translation-in-points" : [
+          0,
+          0
+        ]
+      },
+      "refractivity" : {
+        "depth" : 0.2451171875,
+        "enabled" : true,
+        "strength" : 0.29078125
+      },
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 1
+      },
+      "specular" : "outside",
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.8
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
