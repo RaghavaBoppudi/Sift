@@ -3,7 +3,7 @@ import XCTest
 
 final class DismissedStoreTests: XCTestCase {
 
-    private let testSalt = Data("test-salt-not-random".utf8)
+    private let salt = Data("test-salt-not-random".utf8)
 
     private final class InMemoryPersistence: DismissedStorePersisting {
         var stored: Set<String> = []
@@ -11,88 +11,92 @@ final class DismissedStoreTests: XCTestCase {
         func saveHashes(_ hashes: Set<String>) { stored = hashes }
     }
 
-    // MARK: - Core hashing/membership logic
-
-    func testDismissAndCheckRoundTrip() {
-        let store = DismissedStore(persistence: InMemoryPersistence(), salt: testSalt)
-
-        XCTAssertFalse(store.isDismissed(username: "me@example.com", domain: "meta.com"))
-        store.dismiss(username: "me@example.com", domain: "meta.com")
-        XCTAssertTrue(store.isDismissed(username: "me@example.com", domain: "meta.com"))
+    private func group(
+        user: String = "me@example.com",
+        _ passwordsByDomain: [(String, String)] = [("meta.com", "p1"), ("metacareers.com", "p2")]
+    ) -> ConflictGroup {
+        ConflictGroup(
+            username: user,
+            entries: passwordsByDomain.map { makeEntry($0.0, user: user, pass: $0.1) }
+        )
     }
 
-    func testUsernameAndDomainAreCaseInsensitive() {
-        let store = DismissedStore(persistence: InMemoryPersistence(), salt: testSalt)
+    private func tempFile() -> URL {
+        FileManager.default.temporaryDirectory.appendingPathComponent("dismissed-\(UUID().uuidString).json")
+    }
 
-        store.dismiss(username: "Me@Example.com", domain: "Meta.COM")
-        XCTAssertTrue(store.isDismissed(username: "me@example.com", domain: "meta.com"))
+    func testDismissAndCheckRoundTrip() {
+        let store = DismissedStore(persistence: InMemoryPersistence(), salt: salt)
+
+        XCTAssertFalse(store.isDismissed(group()))
+        store.dismiss(group())
+        XCTAssertTrue(store.isDismissed(group()))
+    }
+
+    func testUsernameIsCaseInsensitive() {
+        let store = DismissedStore(persistence: InMemoryPersistence(), salt: salt)
+
+        store.dismiss(group(user: "Me@Example.com"))
+        XCTAssertTrue(store.isDismissed(group(user: "me@example.com")))
+    }
+
+    func testDismissalIsKeyedOnDomainsNotPasswords() {
+        let store = DismissedStore(persistence: InMemoryPersistence(), salt: salt)
+        store.dismiss(group([("meta.com", "p1"), ("metacareers.com", "p2")]))
+
+        XCTAssertTrue(store.isDismissed(group([("meta.com", "p1"), ("metacareers.com", "changed")])))
+    }
+
+    func testDifferentDomainSetIsNotDismissed() {
+        let store = DismissedStore(persistence: InMemoryPersistence(), salt: salt)
+        store.dismiss(group([("meta.com", "p1"), ("metacareers.com", "p2")]))
+
+        XCTAssertFalse(store.isDismissed(group([("meta.com", "p1"), ("metacafe.com", "p2")])))
+    }
+
+    func testDifferentUsernameIsNotDismissed() {
+        let store = DismissedStore(persistence: InMemoryPersistence(), salt: salt)
+        store.dismiss(group(user: "a@example.com"))
+
+        XCTAssertFalse(store.isDismissed(group(user: "b@example.com")))
     }
 
     func testClearAllRemovesEverything() {
-        let store = DismissedStore(persistence: InMemoryPersistence(), salt: testSalt)
-
-        store.dismiss(username: "a@example.com", domain: "meta.com")
-        store.dismiss(username: "b@example.com", domain: "netflix.com")
+        let store = DismissedStore(persistence: InMemoryPersistence(), salt: salt)
+        store.dismiss(group(user: "a@example.com"))
+        store.dismiss(group(user: "b@example.com"))
         store.clearAll()
 
-        XCTAssertFalse(store.isDismissed(username: "a@example.com", domain: "meta.com"))
-        XCTAssertFalse(store.isDismissed(username: "b@example.com", domain: "netflix.com"))
+        XCTAssertFalse(store.isDismissed(group(user: "a@example.com")))
+        XCTAssertFalse(store.isDismissed(group(user: "b@example.com")))
     }
 
-    func testConflictGroupConvenienceOverload() {
-        let store = DismissedStore(persistence: InMemoryPersistence(), salt: testSalt)
-        let entry = PasswordEntry(title: "x", url: URL(string: "https://meta.com"), registrableDomain: "meta.com", username: "me@example.com", password: "p1")
-        let group = ConflictGroup(username: "me@example.com", registrableDomain: "meta.com", entries: [entry])
+    func testDismissalSurvivesANewStoreInstance() {
+        let file = tempFile()
+        defer { try? FileManager.default.removeItem(at: file) }
 
-        XCTAssertFalse(store.isDismissed(group))
-        store.dismiss(group)
-        XCTAssertTrue(store.isDismissed(group))
+        DismissedStore(persistence: FileDismissedStorePersistence(fileURL: file), salt: salt)
+            .dismiss(group())
+        let reopened = DismissedStore(persistence: FileDismissedStorePersistence(fileURL: file), salt: salt)
+
+        XCTAssertTrue(reopened.isDismissed(group()))
     }
 
-    // MARK: - Real file persistence
+    func testPersistedFileContainsNoPlaintext() throws {
+        let file = tempFile()
+        defer { try? FileManager.default.removeItem(at: file) }
 
-    func testDismissalSurvivesANewStoreInstance() throws {
-        let tempFile = FileManager.default.temporaryDirectory
-            .appendingPathComponent("dismissed-\(UUID().uuidString).json")
-        defer { try? FileManager.default.removeItem(at: tempFile) }
+        DismissedStore(persistence: FileDismissedStorePersistence(fileURL: file), salt: salt)
+            .dismiss(group(user: "raghav@gmail.com"))
+        let raw = try String(contentsOf: file, encoding: .utf8)
 
-        let firstStore = DismissedStore(
-            persistence: FileDismissedStorePersistence(fileURL: tempFile),
-            salt: testSalt
-        )
-        firstStore.dismiss(username: "me@example.com", domain: "meta.com")
-
-        let secondStore = DismissedStore(
-            persistence: FileDismissedStorePersistence(fileURL: tempFile),
-            salt: testSalt
-        )
-        XCTAssertTrue(secondStore.isDismissed(username: "me@example.com", domain: "meta.com"))
+        XCTAssertFalse(raw.contains("raghav"))
+        XCTAssertFalse(raw.contains("meta"))
     }
 
-    func testPersistedFileContainsNoPlaintextUsernameOrDomain() throws {
-        let tempFile = FileManager.default.temporaryDirectory
-            .appendingPathComponent("dismissed-\(UUID().uuidString).json")
-        defer { try? FileManager.default.removeItem(at: tempFile) }
+    func testMissingFileLoadsAsEmpty() {
+        let store = DismissedStore(persistence: FileDismissedStorePersistence(fileURL: tempFile()), salt: salt)
 
-        let store = DismissedStore(
-            persistence: FileDismissedStorePersistence(fileURL: tempFile),
-            salt: testSalt
-        )
-        store.dismiss(username: "raghav@gmail.com", domain: "meta.com")
-
-        let rawFileContents = try String(contentsOf: tempFile, encoding: .utf8)
-        XCTAssertFalse(rawFileContents.contains("raghav"))
-        XCTAssertFalse(rawFileContents.contains("meta.com"))
-    }
-
-    func testEmptyOrMissingFileLoadsAsEmptySet() {
-        let tempFile = FileManager.default.temporaryDirectory
-            .appendingPathComponent("nonexistent-\(UUID().uuidString).json")
-
-        let store = DismissedStore(
-            persistence: FileDismissedStorePersistence(fileURL: tempFile),
-            salt: testSalt
-        )
-        XCTAssertFalse(store.isDismissed(username: "anyone@example.com", domain: "any.com"))
+        XCTAssertFalse(store.isDismissed(group()))
     }
 }

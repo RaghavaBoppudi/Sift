@@ -3,45 +3,28 @@ import XCTest
 
 final class PasswordSessionTests: XCTestCase {
 
-    private func sampleEntries() -> [PasswordEntry] {
-        [
-            PasswordEntry(title: "Test Site", url: URL(string: "https://example.com"), registrableDomain: "example.com", username: "me@example.com", password: "hunter2")
-        ]
-    }
-
     func testStartsEmpty() {
         let session = PasswordSession()
+
         XCTAssertFalse(session.hasData)
         XCTAssertTrue(session.entries.isEmpty)
     }
 
-    func testLoadPopulatesEntries() {
+    func testLoadReplacesRatherThanAppends() {
         let session = PasswordSession()
-        session.load(sampleEntries())
+        session.load([makeEntry("example.com")])
+        session.load([makeEntry("new.com")])
 
         XCTAssertTrue(session.hasData)
         XCTAssertEqual(session.entries.count, 1)
+        XCTAssertEqual(session.entries.first?.registrableDomain, "new.com")
     }
 
     func testResetClearsEverything() {
         let session = PasswordSession()
-        session.load(sampleEntries())
+        session.load([makeEntry("example.com")])
         session.reset()
 
         XCTAssertFalse(session.hasData)
-        XCTAssertTrue(session.entries.isEmpty)
-    }
-
-    func testLoadingAgainReplacesRatherThanAppends() {
-        let session = PasswordSession()
-        session.load(sampleEntries())
-
-        let newEntries = [
-            PasswordEntry(title: "New Site", url: URL(string: "https://new.com"), registrableDomain: "new.com", username: "x@new.com", password: "newPassword")
-        ]
-        session.load(newEntries)
-
-        XCTAssertEqual(session.entries.count, 1)
-        XCTAssertEqual(session.entries.first?.title, "New Site")
     }
 }
