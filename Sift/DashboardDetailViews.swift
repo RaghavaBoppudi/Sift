@@ -106,6 +106,7 @@ private struct UsernamePill: View {
                 fieldRow(label: "Website") {
                     websiteValue(entries)
                 }
+                notesRows(for: entries)
             } else {
                 ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
                     if index > 0 { Divider() }
@@ -115,6 +116,7 @@ private struct UsernamePill: View {
                     fieldRow(label: "Password") {
                         RevealablePassword(password: entry.password)
                     }
+                    notesRows(for: [entry])
                 }
             }
         }
@@ -184,6 +186,18 @@ private struct UsernamePill: View {
         let scheme = url.scheme?.lowercased() ?? ""
         return scheme == "http" || scheme == "https"
     }
+
+    /// One row per entry that actually has a note, right under that entry's own
+    /// website/password — no site or username label needed, since being inside this
+    /// pill already establishes whose account it is.
+    @ViewBuilder
+    private func notesRows(for entries: [PasswordEntry]) -> some View {
+        ForEach(entries.filter { !$0.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) { entry in
+            fieldRow(label: "Notes") {
+                Text(entry.notes).textSelection(.enabled)
+            }
+        }
+    }
 }
 
 /// Reveals only while hovered, copies to clipboard on click — no separate reveal-gate
@@ -213,6 +227,17 @@ private struct RevealablePassword: View {
         justCopied = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             justCopied = false
+        }
+
+        // 30-second expiry — but only clear the clipboard if nothing else has been
+        // copied since. changeCount increments on every pasteboard write, including
+        // ours just above, so capturing it now and checking it later is how we avoid
+        // wiping out something unrelated the person copied in the meantime.
+        let changeCountAtCopy = NSPasteboard.general.changeCount
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+            if NSPasteboard.general.changeCount == changeCountAtCopy {
+                NSPasteboard.general.clearContents()
+            }
         }
     }
 }

@@ -45,8 +45,10 @@ public enum CSVImporter {
         }
 
         // Optional columns — Apple's export has Title and Notes, but we only hard-require
-        // the three that matter for analysis. Missing Title just falls back to the URL.
+        // the three that matter for analysis. Missing Title just falls back to the URL;
+        // missing Notes just means every entry gets an empty one.
         let titleIndex = columnIndex["title"]
+        let notesIndex = columnIndex["notes"]
         let urlIndex = columnIndex["url"]!
         let usernameIndex = columnIndex["username"]!
         let passwordIndex = columnIndex["password"]!
@@ -64,6 +66,7 @@ public enum CSVImporter {
             let username = row[usernameIndex].trimmingCharacters(in: .whitespaces)
             let password = row[passwordIndex]
             let title = titleIndex.flatMap { row.count > $0 ? row[$0] : nil } ?? rawURL
+            let notes = notesIndex.flatMap { row.count > $0 ? row[$0] : nil } ?? ""
 
             // Skip rows with no username at all — nothing to group them by.
             guard !username.isEmpty else { continue }
@@ -77,7 +80,8 @@ public enum CSVImporter {
                     url: url,
                     registrableDomain: domain,
                     username: username,
-                    password: password
+                    password: password,
+                    notes: notes
                 )
             )
         }

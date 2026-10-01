@@ -124,4 +124,18 @@ final class SiftCoreTests: XCTestCase {
         let entry = PasswordEntry(title: "x", url: URL(string: "https://x.com"), registrableDomain: "x.com", username: "a@b.com", password: "")
         XCTAssertFalse(entry.hasUsablePassword)
     }
+
+    // MARK: - Notes column
+
+    func testParsesNotesColumnWhenPresent() throws {
+        let csv = "Title,URL,Username,Password,Notes\nTest,https://example.com,me@example.com,pw1,Recovery code in 1Password"
+        let entries = try CSVImporter.parse(csvText: csv)
+        XCTAssertEqual(entries.first?.notes, "Recovery code in 1Password")
+    }
+
+    func testMissingNotesColumnDefaultsToEmptyString() throws {
+        let csv = "Title,URL,Username,Password\nTest,https://example.com,me@example.com,pw1"
+        let entries = try CSVImporter.parse(csvText: csv)
+        XCTAssertEqual(entries.first?.notes, "")
+    }
 }

@@ -8,6 +8,7 @@ public struct PasswordEntry: Identifiable, Equatable, Hashable, Codable {
     public let registrableDomain: String?
     public let username: String
     public let password: String
+    public let notes: String
 
     public init(
         id: UUID = UUID(),
@@ -15,7 +16,8 @@ public struct PasswordEntry: Identifiable, Equatable, Hashable, Codable {
         url: URL?,
         registrableDomain: String?,
         username: String,
-        password: String
+        password: String,
+        notes: String = ""
     ) {
         self.id = id
         self.title = title
@@ -23,6 +25,7 @@ public struct PasswordEntry: Identifiable, Equatable, Hashable, Codable {
         self.registrableDomain = registrableDomain
         self.username = username
         self.password = password
+        self.notes = notes
     }
 
     /// True for rows Apple exports with no real password (passkey-only rows, notes-only rows).
